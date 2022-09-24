@@ -54,80 +54,76 @@ public class Application {
         System.out.println("Enter recipient name: ");
         recipientName = cleanString(scanner.nextLine(), StringType.STR_SPC);
         System.out.println("Enter street: ");
-        street = cleanString(scanner.nextLine(), StringType.STR_NUM_SPC);
+        street = AddressFormatUtil.replaceAbbreviation(cleanString(scanner.nextLine(), StringType.STR_NUM_SPC));
         System.out.println("Enter city: ");
         city = cleanString(scanner.nextLine(), StringType.STR_SPC);
         System.out.println("Enter state: ");
         state = cleanString(scanner.nextLine(), StringType.STR_SPC).substring(0, 2);
-        System.out.println("Enter zip code: ");
-        zipCode = cleanString(scanner.nextLine(), StringType.NUMBER).substring(0, 5);
-        System.out.println(zipCode);
+        // System.out.println("Enter zip code: ");
+        //zipCode = cleanString(scanner.nextLine(), StringType.NUMBER).substring(0, 5);
 
+        System.out.println("Partial address: ");
         System.out.println(recipientName);
         System.out.println(street);
         System.out.println(city);
         System.out.println(state);
-        System.out.println(zipCode);
+        // System.out.println(zipCode);
 
-        // clean spaces
+        // replace spaces
         String tempCity = city.replaceAll(" ", "%20");
 
         //format user input
         //String formattedAddress = AddressFormatUtil.formatAddress(recipientName, street, city, state, zipCode);
-        String finalURL = BASE_URL + state + "/" + zipCode;
+        String finalURL = BASE_URL + state + "/" + tempCity;
         System.out.println(finalURL);
 
         // call httpUtil to get json string
+        // sample url https://api.zippopotam.us/us/ma/belmont for testing
+        try {
+            String response = HttpUtil.get(finalURL);
+            if (response.contains("GET request failed")) {
+                System.out.println("Please check the information entered");
+            } else {
+                // json object mapping
+                // 1. object mapper
+                ObjectMapper mapper = new ObjectMapper();
+                // 2. dto class + read value
+                ZipCodeDTO zipCodeDTO = mapper.readValue(response, ZipCodeDTO.class);
+                // process it
+                if (zipCodeDTO.getPlaces().size() == 1) {
+                    zipCode = zipCodeDTO.getPlaces().get(0).getPostCode();
+//                    System.out.println(zipCodeDTO.getState());
+//                    System.out.println(zipCodeDTO.getPlaces().get(0).getPlaceName());
+//                    System.out.println(zipCodeDTO.getPlaces().get(0).getPostCode());
+                } else {
+                    System.out.println("Please select zip code");
+                    String userInput;
+                    for (int i = 0; i < zipCodeDTO.getPlaces().size(); i++) {
+                        System.out.println("(" + (i + 1) + ") " + zipCodeDTO.getPlaces().get(i).getPlaceName() +
+                                " " + zipCodeDTO.getPlaces().get(i).getPostCode());
+//                        System.out.println(zipCodeDTO.getState());
+//                        System.out.println(zipCodeDTO.getPlaces().get(i).getPlaceName());
+//                        System.out.println(zipCodeDTO.getPlaces().get(i).getPostCode());
+                    }
+                    System.out.println("Enter zip code selection: ");
+                    userInput = scanner.nextLine();
+                    System.out.println(userInput);
+                    System.out.println(zipCodeDTO.getPlaces().get(Integer.parseInt(userInput) - 1).getPostCode());
+                    zipCode = zipCodeDTO.getPlaces().get(Integer.parseInt(userInput) - 1).getPostCode();
+                }
+                System.out.println("Final address: ");
+                System.out.println(recipientName);
+                System.out.println(street);
+                System.out.println(city + ", " + state + " " + zipCode);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         // convert json string to ZipCodeDTO object
 
         // print out the state and place name
 
-
-    }
-
-    public static void main_backup(String[] args) {
-
-
-
-        // sample url https://api.zippopotam.us/us/ma/belmont for testing
-        try {
-            String url = "https://api.zippopotam.us/us/ca/los%20angeles";
-            String response = HttpUtil.get(url);
-            System.out.println(response.toString());
-
-            // json object mapping
-            // 1. object mapper
-            ObjectMapper mapper = new ObjectMapper();
-            // 2. dto class + read value
-            ZipCodeDTO zipCode = mapper.readValue(response, ZipCodeDTO.class);
-            // print
-            System.out.println();
-            System.out.println(zipCode.getState());
-            System.out.println(zipCode.getPlaces().get(0).getPlace_name());
-            System.out.println(zipCode.getPlaces().get(0).getPost_code());
-
-            System.out.println("In case of more than one record");
-            if (zipCode.getPlaces().size() == 1) {
-                System.out.println(zipCode.getState());
-                System.out.println(zipCode.getPlaces().get(0).getPlace_name());
-                System.out.println(zipCode.getPlaces().get(0).getPost_code());
-            } else {
-                for (int i = 0; i < zipCode.getPlaces().size(); i++) {
-                    System.out.println("Zone " + i);
-                    System.out.println(zipCode.getState());
-                    System.out.println(zipCode.getPlaces().get(i).getPlace_name());
-                    System.out.println(zipCode.getPlaces().get(i).getPost_code());
-                }
-            }
-
-            // calling format from app main
-            String testStr = "123 Main St.";
-            AddressFormatUtil.initCodeTable();
-            System.out.println(AddressFormatUtil.replaceAbbreviation(testStr));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
     }
 }

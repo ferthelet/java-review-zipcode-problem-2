@@ -7,6 +7,9 @@ public class AddressFormatUtil {
 
     private static HashMap<String, String> codeTable = new HashMap<>();
 
+    // runs automatically when class is loaded
+    // static { }
+
     public static void initCodeTable() {
         codeTable.put("ST", "STREET");
         codeTable.put("RD", "ROAD");
@@ -25,6 +28,7 @@ public class AddressFormatUtil {
     }
     public static String replaceAbbreviation(String street) {
         // ref https://www.tutorialspoint.com/posix-character-classes-p-punct-java-regex
+        initCodeTable();
         street = street.replaceAll("\\p{Punct}", "").toUpperCase();
         String[] words = street.split(" ");
         String newStreet = "";

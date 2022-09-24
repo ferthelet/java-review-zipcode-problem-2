@@ -10,21 +10,21 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Place {
 
     @JsonProperty(value = "place name")
-    private String place_name;
+    private String placeName;
     @JsonProperty(value = "post code")
-    private String post_code;
+    private String postCode;
 
-    public String getPlace_name() {
-        return place_name;
+    public String getPlaceName() {
+        return placeName;
     }
     public void setPlace_name(String place_name) {
-        this.place_name = place_name;
+        this.placeName = placeName;
     }
-    public String getPost_code() {
-        return post_code;
+    public String getPostCode() {
+        return postCode;
     }
     public void setPost_code(String post_code) {
-        this.post_code = post_code;
+        this.postCode = postCode;
     }
 
 }
