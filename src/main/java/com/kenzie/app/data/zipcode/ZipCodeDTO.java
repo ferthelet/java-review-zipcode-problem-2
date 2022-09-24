@@ -23,6 +23,4 @@ public class ZipCodeDTO {
     public void setPlaces(List<Place> places) {
         this.places = places;
     }
-
-
 }

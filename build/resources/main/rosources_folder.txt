@@ -1,0 +1,6 @@
+// Resource files used in your application: images, configuration XML and properties files,
+// and so on. During the build process, resource files are copied to the output folder as is
+// by default. You can Change the output path for resource files in your project.
+//
+// Similarly to sources, you can specify that your resources are generated. You can also
+// specify which folder within the output folder your resources should be copied to.
